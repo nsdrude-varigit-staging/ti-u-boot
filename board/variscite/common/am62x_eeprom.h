@@ -46,6 +46,7 @@ struct __attribute__((packed)) var_eeprom
 	u32 ddr_fhs_cnt;          /* 52-0x34 - Number of times to communicate to DDR for frequency handshake. */
 	u32 ddr_freq1;			  /* 56-0x38 - First frequency set point */
 	u32 ddr_freq2; 		      /* 60-0x3c - Second frequency set point */
+	u16 ddr_partnum;		  /* 64-0x40 - DDR VIC Part Number */
 	/*
 	Three dram_cfg_param_t adjustment tables located at off[i]:
 	 - ti,ctl-data:		An array containing the controller settings.

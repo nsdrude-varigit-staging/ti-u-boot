@@ -167,8 +167,9 @@ void var_eeprom_print_prod_info(struct var_eeprom *ep)
 		ep->mac[0], ep->mac[1], ep->mac[2], ep->mac[3], ep->mac[4], ep->mac[5]);
 	debug("EEPROM version: 0x%x\n", ep->version);
 	debug("SOM features: 0x%x\n", ep->features);
-	debug("SOM revision: 0x%x\n", ep->somrev);
-	debug("DRAM size: %d GiB\n\n", (ep->dramsize * 128) / 1024);
+	printf("SOM revision: 0x%x\n", ep->somrev);
+	printf("DRAM size: %d GiB\n\n", (ep->dramsize * 128) / 1024);
+	printf("DRAM VIC%04d\n\n", ep->ddr_partnum);
 }
 #endif
 
