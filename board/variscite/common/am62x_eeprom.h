@@ -9,13 +9,11 @@
 
 #define VAR_EEPROM_MAGIC	0x384D /* == HEX("8M") */
 
-#define VAR_EEPROM_I2C_BUS	0
+#define VAR_EEPROM_I2C_BUS	2
 #define VAR_EEPROM_I2C_ADDR	0x52
 
 /* Use EEPROM on TI AM63X EVK */
-#undef VAR_EEPROM_I2C_ADDR
-#define VAR_EEPROM_I2C_ADDR	0x51
-#define VAR_EEPROM_HEADER_ADDR	4096 /* Start address of header in EEPROM */
+#define VAR_EEPROM_HEADER_ADDR	0 /* Start address of header in EEPROM */
 
 /* Optional SOM features */
 #define VAR_EEPROM_F_WIFI		(1 << 0)
