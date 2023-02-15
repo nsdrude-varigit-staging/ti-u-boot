@@ -174,6 +174,76 @@ void var_eeprom_print_prod_info(struct var_eeprom *ep)
 #endif
 
 #if defined(CONFIG_K3_AM64_DDRSS)
+static int var_eeprom_crc32(struct var_eeprom *ep, const uint32_t offset,
+							const uint32_t len, uint32_t * crc32_val) {
+	uint32_t i;
+	struct udevice *dev;
+	int ret;
+
+	/* No data in EEPROM - return -1 */
+	if (!var_eeprom_is_valid(ep)) {
+		return -1;
+	}
+
+	ret = var_eeprom_get_dev(&dev);
+	if (ret) {
+		debug("%s: Failed 2 to detect I2C EEPROM\n", __func__);
+		return ret;
+	}
+
+	*crc32_val = crc32(0, NULL, 0);
+	for (i = 0; i < len; i++) {
+		uint8_t data;
+		dm_i2c_read(dev, offset + i, &data, 1);
+		*crc32_val = crc32(*crc32_val, &data, 1);
+		// debug("%s: offset=0x%02x data=0x%02x crc=0x%08x\n", __func__, offset + i, data, *crc32_val);
+	}
+
+	debug("%s: crc32=0x%08x (offset=%d len=%d)\n", __func__, *crc32_val, offset, len);
+
+	return 0;
+}
+
+int var_eeprom_ddr_table_is_valid(struct var_eeprom *ep)
+{
+	uint32_t i, ddr_crc32, ddr_adjust_bytes;
+	static int ddr_table_is_valid = -1;
+
+	if (ddr_table_is_valid >= 0) {
+		debug("%s: %d\n", __func__, ddr_table_is_valid);
+		return ddr_table_is_valid;
+	}
+
+	ddr_table_is_valid = 0;
+
+	/* No data in EEPROM - return -1 */
+	if (!var_eeprom_is_valid(ep))
+		return ddr_table_is_valid;
+
+	/* Calculate Size of DDR Adjust Table */
+	for (i = 0; i < DRAM_TABLE_NUM; i++)
+		ddr_adjust_bytes += ep->off[i + 1] - ep->off[i];
+
+	/* Calculate DDR Adjust table CRC32 */
+	if (var_eeprom_crc32(ep, ep->off[0], ddr_adjust_bytes, &ddr_crc32)) {
+		printf("%s: Error: DDR adjust table crc calculation failed\n", __func__);
+		return ddr_table_is_valid;
+	}
+
+	/* Verify DDR Adjust table CRC32 */
+	if (ddr_crc32 != ep->ddr_crc32) {
+		printf("%s: Error: DDR adjust table invalid CRC "
+			"eeprom=0x%08x, calculated=0x%08x, len=%d\n",
+			__func__, ep->ddr_crc32, ddr_crc32, ddr_adjust_bytes);
+		return ddr_table_is_valid;
+	}
+
+	debug("crc32: eeprom=0x%08x, calculated=0x%08x, len=%d\n", ep->ddr_crc32, ddr_crc32, ddr_adjust_bytes);
+	ddr_table_is_valid = 1;
+
+	return ddr_table_is_valid;
+}
+
 static void var_eeprom_adjust_ddr_u32(const char * name, const u32 * ep_val, u32 * dt_val) {
 	if (*ep_val != *dt_val)
 	{
@@ -203,6 +273,11 @@ void board_k3_adjust_ddr_freq(u32 * ddr_freq1, u32 * ddr_freq2,
 
 	debug("%s: EEPROM version is %d\n", __func__, ep->version);
 
+	if (!var_eeprom_ddr_table_is_valid(ep)) {
+		printf("%s: Error: ddr table is not valid\n", __func__);
+		return;
+	}
+
 	var_eeprom_adjust_ddr_u32("ddr_freq1", ddr_freq1, &ep->ddr_freq[0]);
 	var_eeprom_adjust_ddr_u32("ddr_freq2", ddr_freq2, &ep->ddr_freq[1]);
 	var_eeprom_adjust_ddr_u32("ddr_fhs_cnt", ddr_fhs_cnt, &ep->ddr_fhs_cnt);
@@ -218,6 +293,11 @@ void var_eeprom_adjust_ddr_regs(const char * name, u32 * regvalues, u16 * regnum
 	struct udevice *dev;
 
 	printf("%s: Adjusting %s table\n", __func__, name);
+
+	if (!var_eeprom_ddr_table_is_valid(ep)) {
+		printf("%s: Error: ddr table is not valid\n", __func__);
+		return;
+	}
 
 	if (ep_offset >= DRAM_TABLE_NUM)
 	{
