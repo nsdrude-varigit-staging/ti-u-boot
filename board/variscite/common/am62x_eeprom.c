@@ -56,6 +56,9 @@ static int var_eeprom_get_dev(struct udevice **devp)
 		return ret;
 	}
 
+	i2c_set_chip_offset_len(*devp, 1);
+	i2c_set_chip_addr_offset_mask(*devp, 1);
+
 	return 0;
 }
 
@@ -69,10 +72,6 @@ int var_eeprom_read_header(struct var_eeprom *e)
 		printf("%s: Failed to detect I2C EEPROM\n", __func__);
 		return ret;
 	}
-
-	ret = i2c_set_chip_offset_len(dev, 2);
-	if (ret)
-		return ret;
 
 	/* Read EEPROM header to memory */
 	ret = dm_i2c_read(dev, VAR_EEPROM_HEADER_ADDR, (void *)e, sizeof(*e));
@@ -329,10 +328,6 @@ void var_eeprom_adjust_ddr_regs(const char * name, u32 * regvalues, u16 * regnum
 		printf("%s: Failed to detect I2C EEPROM\n", __func__);
 		return;
 	}
-
-	ret = i2c_set_chip_offset_len(dev, 2);
-	if (ret)
-		return;
 
 	off = VAR_EEPROM_HEADER_ADDR + ep->off[ep_offset];
 
