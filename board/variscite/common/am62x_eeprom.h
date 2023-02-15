@@ -42,9 +42,9 @@ struct __attribute__((packed)) var_eeprom
 	u8 partnum2[5];           /* 42-0x2a - part number        */
 	u8 reserved[5];           /* 47-0x2f - reserved, align to 32bit */
 	u32 ddr_fhs_cnt;          /* 52-0x34 - Number of times to communicate to DDR for frequency handshake. */
-	u32 ddr_freq1;			  /* 56-0x38 - First frequency set point */
-	u32 ddr_freq2; 		      /* 60-0x3c - Second frequency set point */
-	u16 ddr_partnum;		  /* 64-0x40 - DDR VIC Part Number */
+	u32 ddr_freq[2];          /* 56-0x38 - Frequency set points */
+	u16 ddr_partnum;          /* 64-0x40 - DDR VIC Part Number */
+
 	/*
 	Three dram_cfg_param_t adjustment tables located at off[i]:
 	 - ti,ctl-data:		An array containing the controller settings.

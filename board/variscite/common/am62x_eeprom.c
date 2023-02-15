@@ -203,8 +203,8 @@ void board_k3_adjust_ddr_freq(u32 * ddr_freq1, u32 * ddr_freq2,
 
 	debug("%s: EEPROM version is %d\n", __func__, ep->version);
 
-	var_eeprom_adjust_ddr_u32("ddr_freq1", ddr_freq1, &ep->ddr_freq1);
-	var_eeprom_adjust_ddr_u32("ddr_freq2", ddr_freq2, &ep->ddr_freq2);
+	var_eeprom_adjust_ddr_u32("ddr_freq1", ddr_freq1, &ep->ddr_freq[0]);
+	var_eeprom_adjust_ddr_u32("ddr_freq2", ddr_freq2, &ep->ddr_freq[1]);
 	var_eeprom_adjust_ddr_u32("ddr_fhs_cnt", ddr_fhs_cnt, &ep->ddr_fhs_cnt);
 }
 
