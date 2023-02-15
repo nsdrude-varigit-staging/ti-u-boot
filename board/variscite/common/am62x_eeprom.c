@@ -17,7 +17,7 @@
 int var_eeprom_is_valid(struct var_eeprom *ep)
 {
 	if (htons(ep->magic) != VAR_EEPROM_MAGIC) {
-		debug("Invalid EEPROM magic 0x%hx, expected 0x%hx\n",
+		debug("Invalid EEPROM magic 0x%04x, expected 0x%04x\n",
 			htons(ep->magic), VAR_EEPROM_MAGIC);
 		return 0;
 	}
