@@ -7,7 +7,7 @@
 #ifndef _AM62X_VAR_EEPROM_H_
 #define _AM62X_VAR_EEPROM_H_
 
-#define VAR_EEPROM_MAGIC	0x384D /* == HEX("8M") */
+#define VAR_EEPROM_MAGIC	0x414D /* == HEX("AM") */
 
 #define VAR_EEPROM_I2C_BUS	2
 #define VAR_EEPROM_I2C_ADDR	0x52
