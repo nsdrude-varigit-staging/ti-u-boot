@@ -180,22 +180,23 @@
 #define EXTRA_ENV_AM625_BOARD_SETTINGS_MMC				\
 	"boot=mmc\0"							\
 	"mmcdev=1\0"							\
-	"bootpart=1:2\0"						\
+	"usbdev=0\0"							\
+	"bootpart=2\0"							\
 	"bootdir=/boot\0"						\
 	"rd_spec=-\0"							\
 	"init_mmc=run args_all args_mmc\0"				\
-	"get_fdt_mmc=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${name_fdt}\0" \
+	"get_fdt_mmc=load mmc ${mmcdev}:${bootpart} ${fdtaddr} ${bootdir}/${name_fdt}\0" \
 	"get_overlay_mmc="						\
 		"fdt address ${fdtaddr};"				\
 		"fdt resize 0x100000;"					\
 		"for overlay in $name_overlays;"			\
 		"do;"							\
-		"load mmc ${bootpart} ${dtboaddr} ${bootdir}/${overlay} && "	\
+		"load mmc ${mmcdev}:${bootpart} ${dtboaddr} ${bootdir}/${overlay} && "	\
 		"fdt apply ${dtboaddr};"				\
 		"done;\0"						\
-	"get_kern_mmc=load mmc ${bootpart} ${loadaddr} "		\
+	"get_kern_mmc=load mmc ${mmcdev}:${bootpart} ${loadaddr} "	\
 		"${bootdir}/${name_kern}\0"				\
-	"get_fit_mmc=load mmc ${bootpart} ${addr_fit} "			\
+	"get_fit_mmc=load mmc ${mmcdev}:${bootpart} ${addr_fit} "	\
 		"${bootdir}/${name_fit}\0"				\
 	"partitions=" PARTS_DEFAULT
 
@@ -205,21 +206,20 @@
 		"root=PARTUUID=${uuid} rw "				\
 		"rootfstype=${mmcrootfstype}\0"				\
 	"init_usb=run args_all args_usb\0"				\
-	"get_fdt_usb=load usb ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0"	\
+	"get_fdt_usb=load usb ${usbdev}:${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0"	\
 	"get_overlay_usb="						\
 		"fdt address ${fdtaddr};"				\
 		"fdt resize 0x100000;"					\
 		"for overlay in $name_overlays;"			\
 		"do;"							\
-		"load usb ${bootpart} ${dtboaddr} ${bootdir}/${overlay} && "	\
+		"load usb ${usbdev}:${bootpart} ${dtboaddr} ${bootdir}/${overlay} && "	\
 		"fdt apply ${dtboaddr};"				\
 		"done;\0"						\
-	"get_kern_usb=load usb ${bootpart} ${loadaddr} "		\
+	"get_kern_usb=load usb ${usbdev}:${bootpart} ${loadaddr} "	\
 		"${bootdir}/${name_kern}\0"				\
-	"get_fit_usb=load usb ${bootpart} ${addr_fit} "			\
+	"get_fit_usb=load usb ${usbdev}:${bootpart} ${addr_fit} "	\
 		"${bootdir}/${name_fit}\0"				\
 	"usbboot=setenv boot usb;"					\
-		"setenv bootpart 0:2;"					\
 		"usb start;"						\
 		"run findfdt;"						\
 		"run init_usb;"						\
