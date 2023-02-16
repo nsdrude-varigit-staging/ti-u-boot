@@ -59,7 +59,15 @@ typedef struct __attribute__((packed)) {
 	uint32_t val;
 } dram_cfg_param_t;
 
-#define VAR_EEPROM_DATA ((struct var_eeprom *) (TI_SRAM_SCRATCH_BOARD_EEPROM_START))
+#ifdef CONFIG_CPU_V7R
+/* Use HSM SRAM scratch pad for R5 SPL */
+#define VAR_EEPROM_SCRATCH_START	0x43c30000
+#else
+/* Use OCRAM as scratch pad for A53 SPL/U-Boot */
+#define VAR_EEPROM_SCRATCH_START	0x70000000
+#endif
+
+#define VAR_EEPROM_DATA ((struct var_eeprom *) (VAR_EEPROM_SCRATCH_START))
 
 #define VAR_CARRIER_EEPROM_MAGIC	0x5643 /* == HEX("VC") */
 
