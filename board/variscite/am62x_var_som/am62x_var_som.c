@@ -19,6 +19,7 @@
 #include <env.h>
 
 #include "../common/am62x_eeprom.h"
+#include "../common/am62x_dram.h"
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -27,14 +28,40 @@ int board_init(void)
 	return 0;
 }
 
+int read_eeprom_header(void) {
+	struct var_eeprom *ep = VAR_EEPROM_DATA;
+	struct var_eeprom eeprom = {0};
+	int ret = 0;
+
+	if (!var_eeprom_is_valid(ep)) {
+		ret = var_eeprom_read_header(&eeprom);
+		if (ret) {
+			printf("%s EEPROM read failed.\n", __func__);
+			return -1;
+		}
+		memcpy(ep, &eeprom, sizeof(*ep));
+	}
+
+	return ret;
+}
+
 int dram_init(void)
 {
-	return fdtdec_setup_mem_size_base();
+	int ret;
+	read_eeprom_header();
+
+	ret = fdtdec_setup_mem_size_base();
+
+	/* Override fdtdec_setup_mem_size_base with memory size from EEPROM */
+	if (!ret)
+		ret = var_dram_init_mem_size_base();
+
+	return ret;
 }
 
 int dram_init_banksize(void)
 {
-	return fdtdec_setup_memory_banksize();
+	return var_dram_init_banksize();
 }
 
 #if defined(CONFIG_SPL_LOAD_FIT)
@@ -98,12 +125,12 @@ void spl_perform_fixups(struct spl_image_info *spl_image)
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
-	struct var_eeprom ep;
+	struct var_eeprom *ep = VAR_EEPROM_DATA;
 
 	env_set("board_name", "VAR-SOM-AM62");
 
-	var_eeprom_read_header(&ep);
-	var_eeprom_print_prod_info(&ep);
+	var_eeprom_read_header(ep);
+	var_eeprom_print_prod_info(ep);
 
 	return 0;
 }
