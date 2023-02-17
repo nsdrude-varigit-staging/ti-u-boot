@@ -180,9 +180,14 @@
 #define EXTRA_ENV_AM625_BOARD_SETTINGS_MMC				\
 	"boot=mmc\0"							\
 	"mmcdev=1\0"							\
+	"mmcblk=1\0"							\
 	"finduuid=part uuid ${boot} ${mmcdev}:${bootpart} uuid\0" \
 	"loadimage=load ${devtype} ${mmcdev}:${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 	"loadfdt=load ${devtype} ${mmcdev}:${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0" \
+	"args_mmc=setenv bootargs console=${console} " \
+		"${optargs} " \
+		"root=/dev/mmcblk${mmcblk}p${bootpart} rw " \
+		"rootfstype=${mmcrootfstype}\0" \
 	"usbdev=0\0"							\
 	"bootpart=2\0"							\
 	"bootdir=/boot\0"						\
