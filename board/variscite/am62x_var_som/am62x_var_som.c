@@ -20,6 +20,9 @@
 
 #include "../common/am62x_eeprom.h"
 #include "../common/am62x_dram.h"
+#ifdef CONFIG_BOARD_LATE_INIT
+#include "../common/am62x_mmc.h"
+#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -122,7 +125,32 @@ void spl_perform_fixups(struct spl_image_info *spl_image)
 }
 #endif
 
+#define ENV_STR_SIZE 10
+
 #ifdef CONFIG_BOARD_LATE_INIT
+void set_bootdevice_env(void) {
+	int * boot_device = (int *) VAR_SCRATCH_BOOT_DEVICE;
+	char env_str[ENV_STR_SIZE];
+
+	snprintf(env_str, ENV_STR_SIZE, "%d", *boot_device);
+	env_set("boot_dev", env_str);
+
+	switch(*boot_device) {
+	case BOOT_DEVICE_MMC2:
+		printf("Boot Device: SD\n");
+		env_set("boot_dev_name", "sd");
+		break;
+	case BOOT_DEVICE_MMC1:
+		printf("Boot Device: eMMC\n");
+		env_set("boot_dev_name", "emmc");
+		break;
+	default:
+		printf("Boot Device: Unknown\n");
+		env_set("boot_dev_name", "unknown");
+		break;
+	}
+}
+
 int board_late_init(void)
 {
 	struct var_eeprom *ep = VAR_EEPROM_DATA;
@@ -131,6 +159,12 @@ int board_late_init(void)
 
 	var_eeprom_read_header(ep);
 	var_eeprom_print_prod_info(ep);
+
+	set_bootdevice_env();
+
+#ifdef CONFIG_ENV_IS_IN_MMC
+	board_late_mmc_env_init();
+#endif
 
 	return 0;
 }
@@ -144,6 +178,12 @@ int board_late_init(void)
 void spl_board_init(void)
 {
 	u32 val;
+
+#ifndef CONFIG_CPU_V7R
+	/* Save boot_device for U-Boot */
+	int * boot_device = (int *) VAR_SCRATCH_BOOT_DEVICE;
+	*boot_device = spl_boot_device();
+#endif
 
 	/* Set USB0 PHY core voltage to 0.85V */
 	val = readl(CTRLMMR_USB0_PHY_CTRL);
