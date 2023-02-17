@@ -64,7 +64,8 @@ typedef struct __attribute__((packed)) {
 #define VAR_EEPROM_SCRATCH_START	0x43c30000
 #else
 /* Use OCRAM as scratch pad for A53 SPL/U-Boot */
-#define VAR_EEPROM_SCRATCH_START	0x70000000
+#define VAR_SCRATCH_BOOT_DEVICE	0x70000000
+#define VAR_EEPROM_SCRATCH_START	(VAR_SCRATCH_BOOT_DEVICE + sizeof(uint32_t))
 #endif
 
 #define VAR_EEPROM_DATA ((struct var_eeprom *) (VAR_EEPROM_SCRATCH_START))
