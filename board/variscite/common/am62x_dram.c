@@ -52,7 +52,7 @@ int var_dram_init_mem_size_base(void) {
 	gd->ram_size = dram_size;
 
 	/* Set V2A_CTL_REG */
-	switch (dram_size) {
+	switch ((long long unsigned int) dram_size) {
 		case SZ_512M:
 			writel( ((readl(AM64_DDRSS_SS_BASE + 0x020) & ~0x3FF) | 0x1AD), AM64_DDRSS_SS_BASE + 0x020);
 			break;
