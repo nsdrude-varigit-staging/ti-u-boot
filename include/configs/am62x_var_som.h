@@ -387,12 +387,6 @@
 /* Now for the remaining common defines */
 #include <configs/ti_armv7_common.h>
 
-/* MMC ENV related defines */
-#ifdef CONFIG_ENV_IS_IN_MMC
-#define CONFIG_SYS_MMC_ENV_DEV		0
-#define CONFIG_SYS_MMC_ENV_PART		1
-#endif
-
 #ifdef CONFIG_SYS_MALLOC_LEN
 #undef CONFIG_SYS_MALLOC_LEN
 #endif
