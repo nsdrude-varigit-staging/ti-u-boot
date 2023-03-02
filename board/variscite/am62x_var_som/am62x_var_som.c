@@ -166,6 +166,12 @@ int board_late_init(void)
 	board_late_mmc_env_init();
 #endif
 
+	/* Configure registers not yet supported by the Linux Kernel */
+	*((uint32_t *) 0x00104044) = 0x12; /* eth0 */
+	*((uint32_t *) 0x00104048) = 0x12; /* eth1 */
+	*((uint32_t *) 0x43008020) = 0x5; /* set WKUP_CLKOUT0 to 32Khz */
+	*((uint32_t *) 0x001082E4) = 0x8007; /* fix sound clock */
+
 	return 0;
 }
 #endif
