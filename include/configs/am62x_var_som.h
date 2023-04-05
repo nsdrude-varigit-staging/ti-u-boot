@@ -16,6 +16,9 @@
 #include <environment/ti/k3_rproc.h>
 
 /* DDR Configuration */
+#define CONFIG_VERY_BIG_RAM
+#define CONFIG_MAX_MEM_MAPPED 0x80000000
+
 #define CONFIG_SYS_SDRAM_BASE1		0x880000000
 #define CONFIG_SYS_BOOTM_LEN            SZ_64M
 
