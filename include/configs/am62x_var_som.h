@@ -8,7 +8,7 @@
 
 #ifndef __CONFIG_AM62X_VAR_SOM_H
 #define __CONFIG_AM62X_VAR_SOM_H
-
+#define CONFIG_SYS_MEM_TOP_HIDE (SZ_3G)
 #include <linux/sizes.h>
 #include <config_distro_bootcmd.h>
 #include <environment/ti/mmc.h>
