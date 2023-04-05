@@ -25,7 +25,7 @@ int var_eeprom_is_valid(struct var_eeprom *ep)
 	return 1;
 }
 
-int var_eeprom_get_dram_size(struct var_eeprom *ep, phys_size_t *size)
+int var_eeprom_get_dram_size(struct var_eeprom *ep, uint64_t *size)
 {
 	/* No data in EEPROM - return default DRAM size */
 	if (!var_eeprom_is_valid(ep)) {
@@ -33,7 +33,7 @@ int var_eeprom_get_dram_size(struct var_eeprom *ep, phys_size_t *size)
 		return 0;
 	}
 
-	*size = (ep->dramsize * 128UL) << 20;
+	*size = ((uint64_t)ep->dramsize * 128UL) * (1UL << 20);
 
 	return 0;
 }
