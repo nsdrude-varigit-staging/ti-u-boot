@@ -27,7 +27,7 @@ static ddr_bank_t am62x_ddr_banks[] = {
 	{.start = 0, .max_size = 0}
 };
 
-static int get_dram_size(phys_size_t *size) {
+static int get_dram_size(uint64_t *size) {
 	struct var_eeprom *ep = VAR_EEPROM_DATA;
 
 	if (!size)
@@ -39,17 +39,26 @@ static int get_dram_size(phys_size_t *size) {
 }
 
 int var_dram_init_mem_size_base(void) {
-	phys_size_t dram_size;
+	uint64_t dram_size;
 	int ret;
 	ret = get_dram_size(&dram_size);
-
 	if (ret) {
 		printf("%s: Error: could not get dram size from EEPROM\n", __func__);
 		return ret;
 	}
 
-	/* Update gd->ram_size according to EEPROM */
-	gd->ram_size = dram_size;
+	/*
+	 Update gd->ram_size according to EEPROM
+	 Limit to 2GB for 32bit architecture (r5)
+	*/
+#ifdef CONFIG_PHYS_64BIT
+	gd->ram_size = (phys_size_t) dram_size;
+#else
+	if ((uint64_t) dram_size > SZ_2G)
+		gd->ram_size = (phys_size_t) SZ_2G;
+	else
+		gd->ram_size = (phys_size_t) dram_size;
+#endif
 
 	/* Set V2A_CTL_REG */
 	switch ((long long unsigned int) dram_size) {
@@ -71,8 +80,7 @@ int var_dram_init_mem_size_base(void) {
 }
 
 int var_dram_init_banksize(void) {
-	phys_size_t dram_size;
-	uint32_t remaining_size;
+	uint64_t dram_size, remaining_size;
 	int ret, bank = 0;
 
 	ret = get_dram_size(&dram_size);
@@ -82,7 +90,7 @@ int var_dram_init_banksize(void) {
 		return fdtdec_setup_memory_banksize();
 	}
 
-	remaining_size = (uint32_t) dram_size;
+	remaining_size = dram_size;
 	for (bank = 0; bank < CONFIG_NR_DRAM_BANKS && am62x_ddr_banks[bank].max_size != 0 && remaining_size; bank++) {
 		/* Calculate bank size */
 		if (remaining_size >= am62x_ddr_banks[bank].max_size) {
@@ -96,12 +104,10 @@ int var_dram_init_banksize(void) {
 		/* Assign bank start*/
 		gd->bd->bi_dram[bank].start = am62x_ddr_banks[bank].start;
 
-		#ifndef CONFIG_CPU_V7R
 		debug("%s: DRAM Bank #%d: start = 0x%llx, size = 0x%llx\n",
 		      __func__, bank,
 		      (unsigned long long)gd->bd->bi_dram[bank].start,
 		      (unsigned long long)gd->bd->bi_dram[bank].size);
-		#endif
 	}
 
 	return 0;
