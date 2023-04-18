@@ -25,6 +25,7 @@ int var_eeprom_is_valid(struct var_eeprom *ep)
 	return 1;
 }
 
+#if CONFIG_VAR_DDR_EEPROM_INIT
 int var_eeprom_get_dram_size(struct var_eeprom *ep, uint64_t *size)
 {
 	/* No data in EEPROM - return default DRAM size */
@@ -37,6 +38,7 @@ int var_eeprom_get_dram_size(struct var_eeprom *ep, uint64_t *size)
 
 	return 0;
 }
+#endif
 
 #if defined(CONFIG_DM_I2C)
 static int var_eeprom_get_dev(struct udevice **devp)
@@ -167,10 +169,12 @@ void var_eeprom_print_prod_info(struct var_eeprom *ep)
 	debug("EEPROM version: 0x%x\n", ep->version);
 	debug("SOM features: 0x%x\n", ep->features);
 	printf("SOM revision: 0x%x\n", ep->somrev);
+#if CONFIG_VAR_DDR_EEPROM_INIT
 	if (ep->dramsize < 8)
 		printf("DRAM size: %d MiB\n", ep->dramsize * 128);
 	else
 		printf("DRAM size: %d GiB\n", (ep->dramsize * 128) / 1024);
+#endif
 	printf("DRAM PN: VIC%04d\n\n", ep->ddr_partnum);
 }
 #endif
@@ -206,6 +210,7 @@ static int var_eeprom_crc32(struct var_eeprom *ep, const uint32_t offset,
 	return 0;
 }
 
+#if CONFIG_VAR_DDR_EEPROM_INIT
 int var_eeprom_ddr_table_is_valid(struct var_eeprom *ep)
 {
 	uint32_t i, ddr_crc32, ddr_adjust_bytes;
@@ -377,6 +382,7 @@ void board_k3_adjust_ddr_phy_regs(u32 * regvalues, u16 * regnum,
 {
 	var_eeprom_adjust_ddr_regs("DDRSS_PHY", regvalues, regnum, regcount, DDR_OFF_PHY_DATA);
 }
+#endif
 #endif
 
 #ifndef CONFIG_SPL_BUILD
