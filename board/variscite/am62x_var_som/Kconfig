@@ -13,7 +13,6 @@ config TARGET_AM62X_VAR_SOM_A53
 	bool "Varisite VAR-SOM-AM62 running on A53"
 	select ARM64
 	select SOC_K3_AM625
-	select VAR_DDR_EEPROM_INIT
 	imply BOARD
 	imply SPL_BOARD
 	imply TI_I2C_BOARD_DETECT
@@ -28,7 +27,6 @@ config TARGET_AM62X_VAR_SOM_R5
 	select SPL_RAM
 	select K3_DDRSS
 	select K3_DDRSS_BOARD_ADJUST
-	select VAR_DDR_EEPROM_INIT
 	imply SYS_K3_SPL_ATF
 	imply TI_I2C_BOARD_DETECT
 
