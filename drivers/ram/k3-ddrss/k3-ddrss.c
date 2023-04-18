@@ -521,6 +521,10 @@ __weak void board_k3_adjust_ddr_phy_regs(u32 * regvalues, u16 * regnum,
 				 const u16 regcount )
 {
 }
+
+__weak void board_k3_adjust_ddr_done()
+{
+}
 #endif
 
 void k3_lpddr4_hardware_reg_init(struct k3_ddrss_desc *ddrss)
@@ -558,7 +562,7 @@ void k3_lpddr4_hardware_reg_init(struct k3_ddrss_desc *ddrss)
 		printf(" ERROR: LPDDR4_HardwareRegInit failed!!\n");
 		hang();
 	}
-
+	board_k3_adjust_ddr_done();
 	return;
 }
 

@@ -1,0 +1,18 @@
+/**
+ * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
+ * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
+ * @cliArgs --device "AM62x" --package "ALW" --part "Default" --product "Processor_DDR_Config@0.09.08"
+ * @versions {"tool":"1.15.0+2826"}
+ */
+
+/**
+ * Import the modules used in this configuration.
+ */
+const DDRSS = scripting.addModule("/DDRSS");
+
+/**
+ * Write custom configuration values to the imported modules.
+ */
+DDRSS.ddr4.$name                   = "ddr4_DDRSS_DDR40";
+DDRSS.ddr4.system_cfg_dram_density = 8;
+DDRSS.ddr4.config_dram_tCCD_L_tCK  = 5;

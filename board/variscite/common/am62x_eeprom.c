@@ -360,22 +360,51 @@ void var_eeprom_adjust_ddr_regs(const char * name, u32 * regvalues, u16 * regnum
 	}
 }
 
+void compare_arrays(const char * prefix, uint32_t* arr1, uint32_t* arr2, int length) {
+    int i, cnt = 0;
+	printf("  Comparing %s\n", prefix);
+    for (i = 0; i < length; i++) {
+        if (arr1[i] != arr2[i]) {
+            printf("    %s Mismatch at offset %d: arr1[%d] = %u, arr2[%d] = %u\n", prefix, i, i, arr1[i], i, arr2[i]);
+			cnt++;
+        }
+    }
+	printf("  %s has %d mismatches\n", prefix, cnt);
+}
+
+
 void board_k3_adjust_ddr_ctl_regs(u32 * regvalues, u16 * regnum,
 				 const u16 regcount )
 {
+	extern uint32_t DDRSS_ctlReg[];
+	printf("==================DDRSS_CTL=================\n");
+	compare_arrays("DDRSS_CTL PRE", DDRSS_ctlReg, regvalues, regcount);
 	var_eeprom_adjust_ddr_regs("DDRSS_CTL", regvalues, regnum, regcount, DDR_OFF_CTL_DATA);
+	compare_arrays("DDRSS_CTL POS", DDRSS_ctlReg, regvalues, regcount);
+	printf("===================================\n");
 }
 
 void board_k3_adjust_ddr_pi_regs(u32 * regvalues, u16 * regnum,
 				 const u16 regcount )
 {
+	extern uint32_t DDRSS_phyIndepReg[];
+	printf("==================DDRSS_PI=================\n");
+	compare_arrays("DDRSS_PI PRE", DDRSS_phyIndepReg, regvalues, regcount);
 	var_eeprom_adjust_ddr_regs("DDRSS_PI", regvalues, regnum, regcount, DDR_OFF_PI_DATA);
+	compare_arrays("DDRSS_PI POS", DDRSS_phyIndepReg, regvalues, regcount);
+	printf("===================================\n");
+
 }
 
 void board_k3_adjust_ddr_phy_regs(u32 * regvalues, u16 * regnum,
 				 const u16 regcount )
 {
+	extern uint32_t DDRSS_phyReg[];
+	printf("==================DDRSS_phyReg=================\n");
+	compare_arrays("DDRSS_phyReg PRE", DDRSS_phyReg, regvalues, regcount);
 	var_eeprom_adjust_ddr_regs("DDRSS_PHY", regvalues, regnum, regcount, DDR_OFF_PHY_DATA);
+	compare_arrays("DDRSS_phyReg POS", DDRSS_phyReg, regvalues, regcount);
+	printf("===================================\n");
 }
 #endif
 
