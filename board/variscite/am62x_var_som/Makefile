@@ -7,7 +7,7 @@
 
 obj-y	+= am62x_var_som.o
 obj-y += ../common/am62x_eeprom.o
-obj-y += ../common/am62x_dram.o
+obj-$(CONFIG_VAR_DDR_EEPROM_INIT) += ../common/am62x_dram.o
 ifndef CONFIG_CPU_V7R
 obj-y += ../common/am62x_mmc.o
 endif

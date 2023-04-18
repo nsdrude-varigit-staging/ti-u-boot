@@ -19,7 +19,9 @@
 #include <env.h>
 
 #include "../common/am62x_eeprom.h"
+#if CONFIG_VAR_DDR_EEPROM_INIT
 #include "../common/am62x_dram.h"
+#endif
 #ifdef CONFIG_BOARD_LATE_INIT
 #include "../common/am62x_mmc.h"
 #endif
@@ -57,16 +59,22 @@ int dram_init(void)
 
 	ret = fdtdec_setup_mem_size_base();
 
+#if CONFIG_VAR_DDR_EEPROM_INIT
 	/* Override fdtdec_setup_mem_size_base with memory size from EEPROM */
 	if (!ret)
 		ret = var_dram_init_mem_size_base();
+#endif
 
 	return ret;
 }
 
 int dram_init_banksize(void)
 {
+#if CONFIG_VAR_DDR_EEPROM_INIT
 	return var_dram_init_banksize();
+#else
+	return fdtdec_setup_memory_banksize();
+#endif
 }
 
 #if defined(CONFIG_SPL_LOAD_FIT)
