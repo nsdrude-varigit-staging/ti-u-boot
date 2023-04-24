@@ -419,6 +419,6 @@
 #undef CONFIG_SYS_MALLOC_LEN
 #endif
 #define CONFIG_SYS_MALLOC_LEN           SZ_128M
-#define DEFAULT_SDRAM_SIZE              SZ_512M
+#define DEFAULT_SDRAM_SIZE              SZ_2G
 
 #endif /* __CONFIG_AM62X_VAR_SOM_H */
